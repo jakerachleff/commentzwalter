@@ -2,7 +2,18 @@ import pathlib
 
 TEST_FILE = "corpus/text1"
 CORPUS = "corpus/"
+N_SHINGLES = 100
 
+
+def get_shingles(text, k):
+	"""Return a list of the k-singles of a text file
+
+	@param text: string to convert to shingles
+    @param k: length of each single
+    @return: list of shingles
+    """
+	return [text[i:i+k] for i in range(len(text))]
+    
 def files_in_directory(dirname):
     """CITATION: Taken from the starter code of a CS41 assignment
 
@@ -20,10 +31,11 @@ if __name__ == '__main__':
 
     file_names = files_in_directory(CORPUS)
 
-    #for file_name in file_names:
-    file_name = file_names[0]
-    lines = [line.rstrip('\n') for line in open(file_name)]
-    text = ''.join(lines) 
-    print(text)
+    for file_name in file_names:
+	    text = ''.join([line.rstrip('\n') for line in open(file_name)])
+	    shingles = get_shingles(text, N_SHINGLES)
+
+
+
 
 
