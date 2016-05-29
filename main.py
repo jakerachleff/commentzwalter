@@ -2,10 +2,9 @@ import pathlib
 import ahocorasick
 from enum import Enum
 
-TEST_FILE = "../corpus/text3"
-CORPUS = "../corpus/"
+TEST_FILE = "corpus/text3"
+CORPUS = "corpus/"
 SHINGLE_LEN = 15
-
 
 match_count = 0
 
