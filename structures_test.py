@@ -1,4 +1,4 @@
-from structures import Trie, ACAuto
+from structures import Trie, ACAuto, CWAuto
 
 
 def test_Trie():
@@ -38,18 +38,21 @@ def test_ACAuto():
 
 def test_CWAuto():
 	print("TESTING THE CWAUTO DATA STRUCTURE")
-	our_trie = Trie()
-	our_trie.add_word("hello")
-	our_trie.add_word("help")
-	our_trie.add_word("howdy")
-	our_trie.add_word("james")
-	our_trie.add_word("hello")
-	our_trie.lookup("helpo")
-	our_trie.lookup("hello")
-	our_trie.lookup("olleh")
-	our_trie.lookup("help")
-	our_trie.lookup("howdy")
-	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n\n")
+	our_CWAuto = CWAuto()
+	our_CWAuto.add_word("hello")
+	our_CWAuto.add_word("help")
+	our_CWAuto.add_word("howdy")
+	our_CWAuto.add_word("james")
+	our_CWAuto.add_word("hello")
+	our_CWAuto.lookup("helpo")
+	our_CWAuto.lookup("hello")
+	our_CWAuto.lookup("olleh")
+	our_CWAuto.lookup("help")
+	our_CWAuto.lookup("howdy")
+
+	print("\n\nNow, testing its CWAUTO ability:")
+	our_ACAuto.create_failure_links()
+	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n")
 
 def main():
 	test_Trie()

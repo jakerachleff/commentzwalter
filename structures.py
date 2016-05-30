@@ -160,14 +160,40 @@ class CWAuto(Trie):
 
 	def add_word(self, word):
 		word = word[::-1]
-		super().add_word(self, word)
+		super().add_word(word)
 		if self.min_depth is None:
 			self.min_depth = len(word)
-		elif len(word) < min_depth:
+		elif len(word) < self.min_depth:
 			self.min_depth = len(word)
 
 	def lookup(self, word):
 		word = word[::-1]
-		super().lookup(self, word)
+		super().lookup(word)
+
+	def create_failure_links():
+		bfs_queue = deque()
+
+		# First, set suffix links for first children to root
+		for key in self.root.children:
+			child = self.root.children[key]
+			child.ACsuffix_link = self.root
+
+			for key2 in child.children:
+				grandchild = child.children[key2]
+				bfs_queue.append(grandchild)
+
+		while (len(bfs_queue) > 0):
+			current_node = bfs_queue.popleft();
+			for key in current_node.children:
+				child = current_node.children[key]
+				bfs_queue.append(child)
+
+			# Set suffix nodes in reverse
+			AC_suffix_node = self.get_AC_suffix_link(current_node)
+			if AC_suffix_node.min_difference == -1 or AC_suffix_node.min_difference > current_node.depth - AC_suffix_node.depth:
+				AC_suffix_node.min_difference = current_node.depth - AC_suffix_node.depth
+				AC_suffix_node.CWsuffix_link = current_node
+				if AC_suffix_node.word is not None:
+					print (AC_suffix_node.word + " now points to character " + current_node.character)
 
 
