@@ -1,3 +1,13 @@
+"""
+File: structures-test.py
+-------------------
+Final Project: Commentz-Walter String Matching Algorithm
+Course: CS 166
+Authors: Eric Ehizokhale and Jake Rachleff
+
+Tests three data structures: Trie, Aho Corsick, and Commentz-Walter
+"""
+
 from structures import Trie, ACAuto, CWAuto
 
 
@@ -51,7 +61,17 @@ def test_CWAuto():
 	our_CWAuto.lookup("cacbaa")
 
 	print("\n\nNow, testing its CWAUTO ability:")
+	our_CWAuto = CWAuto()
+	our_CWAuto.add_word("hello")
+	our_CWAuto.add_word("help")
+	our_CWAuto.add_word("howdy")
+	our_CWAuto.add_word("james")
+	our_CWAuto.add_word("jake")
+	our_CWAuto.add_word("ello")
+	our_CWAuto.add_word("hello")
+	our_CWAuto.add_word("shello")
 	our_CWAuto.create_failure_links()
+	our_CWAuto.report_all_matches("jameshelloa;sldkfj;asdljfadello")
 	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n")
 
 def main():
