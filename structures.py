@@ -1,7 +1,7 @@
 from collections import deque
 
 
-NO_DIFFERENCE_SET = -1
+NOT_SET = -1
 
 class Node(object):
 	def __init__(self, character, depth, parent):
@@ -10,21 +10,23 @@ class Node(object):
 		self.word = None
 		self.parent = parent
 		self.ACsuffix_link = None
+		self.ACoutput_link = None
 		self.children = {}
 
 class ACNode(Node):
 	def __init__(self, character, depth, parent):
 		Node.__init__(self, character, depth, parent)
-		self.output_link = None
-		self.suffix_link = None
 
 
 class CWNode(Node):
 	def __init__(self, character, depth, parent):
 		Node.__init__(self, character, depth, parent)
-		self.min_difference = NO_DIFFERENCE_SET
-		self.output_link = None
+		self.min_difference_s1 = NOT_SET
+		self.min_difference_s2 = NOT_SET
 		self.CWsuffix_link = None
+		self.CWoutput_link = None
+		self.shift1 = None
+		self.shift2 = None
 
 class Trie(object):
 	def create_node(self, character, depth, parent):
@@ -47,6 +49,7 @@ class Trie(object):
 				print ("ERROR: Incorrect depths")
 
 			current_node = next_node
+			current_depth += 1
 
 		if current_node.word is not None:
 			print ("you have already printed " + word)
@@ -120,7 +123,7 @@ class ACAuto(Trie):
 
 			current_node.ACsuffix_link = self.get_AC_suffix_link(current_node)
 			suffix_is_word = current_node.ACsuffix_link.word is not None
-			current_node.output_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.output_link
+			current_node.ACoutput_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.ACoutput_link
 
 	def report_all_matches(self, text):
 		matches = deque()
@@ -140,10 +143,10 @@ class ACAuto(Trie):
 			if (current_node.word is not None):
 				matches.append((current_node.word, pos - len(current_node.word) + 1))
 
-			output_searcher = current_node.output_link
+			output_searcher = current_node.ACoutput_link
 			while (output_searcher is not None):
 				matches.append((output_searcher.word, pos - len(output_searcher.word) + 1))
-				output_searcher = output_searcher.output_link
+				output_searcher = output_searcher.ACoutput_link
 
 			pos += 1
 
@@ -180,6 +183,34 @@ class CWAuto(Trie):
 		word = word[::-1]
 		super().lookup(word)
 
+	def initialize_shift_values(self):
+		bfs_queue = deque()
+		print ("min depth is " + str(self.min_depth))
+		self.root.shift1 = 1
+		self.root.shift2 = self.min_depth
+
+		for key in self.root.children:
+			bfs_queue.append(self.root.children[key])
+
+		while (len(bfs_queue) > 0):
+			current_node = bfs_queue.popleft()
+			# set shift1
+			if current_node.CWsuffix_link is None:
+				current_node.shift1 = self.min_depth
+			else:
+				current_node.shift1 = current_node.min_difference_s1
+
+			#set shift2
+			if current_node.CWoutput_link is None:
+				current_node.shift2 = current_node.parent.shift2
+			else:
+				current_node.shift2 = current_node.min_difference_s2
+
+			print (current_node.character + ": shift1 is " + str(current_node.shift1) + " and shift2 is " + str(current_node.shift2))
+
+			for key in current_node.children:
+				bfs_queue.append(current_node.children[key])
+
 	def create_failure_links(self):
 		print (self.char_lookup_table)
 		bfs_queue = deque()
@@ -194,16 +225,33 @@ class CWAuto(Trie):
 				bfs_queue.append(grandchild)
 
 		while (len(bfs_queue) > 0):
-			current_node = bfs_queue.popleft();
+			current_node = bfs_queue.popleft()
 			for key in current_node.children:
 				child = current_node.children[key]
 				bfs_queue.append(child)
 
-			# Set suffix nodes in reverse
+			# Set AC nodes first
 			AC_suffix_node = self.get_AC_suffix_link(current_node)
 			current_node.ACsuffix_link = AC_suffix_node
-			if AC_suffix_node.min_difference == -1 or AC_suffix_node.min_difference > current_node.depth - AC_suffix_node.depth:
-				AC_suffix_node.min_difference = current_node.depth - AC_suffix_node.depth
+			suffix_is_word = current_node.ACsuffix_link.word is not None
+			current_node.ACoutput_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.ACoutput_link
+
+			# Set reverse suffix links
+			if AC_suffix_node.min_difference_s1 == -1 or AC_suffix_node.min_difference_s1 > current_node.depth - AC_suffix_node.depth:
+				print ("Setting a reverse suffix link for current node (%s, %d) and suffix node (%s, %d)" 
+					% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
+				AC_suffix_node.min_difference_s1 = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
 
+			# Set reverse output links
+			if (current_node.word is None) or (current_node.ACoutput_link is None):
+				continue
+
+			potential_s2_node = current_node.ACoutput_link
+			if potential_s2_node.min_difference_s2 == NOT_SET or potential_s2_node.min_difference_s2 > current_node.depth - potential_s2_node.depth:
+				print ("Setting a reverse output link")
+				potential_s2_node.min_difference_s1 = current_node.depth - potential_s2_node.depth
+				potential_s2_node.CWsuffix_link = current_node
+
+		self.initialize_shift_values()
 
