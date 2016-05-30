@@ -4,6 +4,7 @@ File: main.py
 Final Project: Commentz-Walter String Matching Algorithm
 Course: CS 166
 Author: Christina Gilbert
+Group: Christina Gilbert, Eric Ehizokhale, Jake Rachleff
 
 Main file for testing runtimes of Aho-Corasick vs Rabin Karp vs
 Commentz Walter algorithms for plagarism using k-shingles of a test
@@ -18,7 +19,7 @@ from enum import Enum
 from collections import namedtuple
 
 TEST_FILE = "corpus/text4"
-CORPUS = "temp_corpus/"
+CORPUS = "corpus/"
 SHINGLE_LEN = 30
 
 ac_match_count = 0
@@ -123,7 +124,6 @@ def run_rabin_karp(test_file_text, shingles, file_names):
 	#start the timer on rabin-karp
 	start_time = time.time()
 
-	###### TODO: IMPLEMENT THIS ######
 	pattern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, SHINGLE_LEN)
 	rc_matches_count = 0
 
@@ -155,6 +155,7 @@ def run_commentz_walter(shingles, file_names):
 
 	elapsed_time = time.time() - start_time
 	return Result(elapsed_time, 0)
+
 
 ##### MAIN #####
 
