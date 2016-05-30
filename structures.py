@@ -1,3 +1,13 @@
+"""
+File: structures.py
+-------------------
+Final Project: Commentz-Walter String Matching Algorithm
+Course: CS 166
+Authors: Eric Ehizokhale and Jake Rachleff
+
+Implements three data structures: Trie, Aho Corsick, and Commentz-Walter
+"""
+
 from collections import deque
 
 
@@ -255,4 +265,48 @@ class CWAuto(Trie):
 					AC_suffix_node.CWoutput_link = current_node
 
 		self.initialize_shift_values()
+
+	def char_func(self, character):
+		min_depth = self.char_lookup_table.get(character)
+		if min_depth is None:
+			min_depth = self.min_depth + 1
+
+		return min_depth
+
+	def shift_func(self, node, j):
+		max_of_s1_and_char = max(self.char_func(node.character) - j - 1, node.shift1)
+		return min(max_of_s1_and_char, node.shift2)
+
+	def report_all_matches(self, text):
+		i = self.min_depth - 1
+		matches = deque()
+
+		while (i < len(text)):
+			# Scan Phase
+			# import pdb; pdb.set_trace()
+			v = self.root
+			j = 0
+			char_to_find = text[i - j]
+			while (self.node_has_child(v, char_to_find)):
+				if i - j == -1:
+					print ("we fucked up")
+
+				v = v.children[char_to_find]
+				j += 1
+
+				if (v.word is not None):
+					matches.append((v.word[::-1], i - j + 1))
+
+				searcher = v.ACoutput_link
+				while (searcher is not None):
+					matches.append((searcher.word[::-1], i - j + 1))
+					searcher = searcher.ACoutput_link
+
+				char_to_find = text[i-j]
+
+			# Shift Phase
+			i += self.shift_func(v, j)
+
+		for match, pos in matches:
+			print ("matched " + match + " at " + str(pos))
 
