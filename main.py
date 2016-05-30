@@ -12,14 +12,16 @@ file against a corpus of other files.
 
 import pathlib
 import ahocorasick
+import rabin_karp
 import time
 from enum import Enum
+from collections import namedtuple
 
 TEST_FILE = "corpus/text3"
 CORPUS = "corpus/"
 SHINGLE_LEN = 15
 
-match_count = 0
+ac_match_count = 0
 
 
 ##### GENERAL UTILITIES #####
@@ -78,17 +80,18 @@ def ac_match_callback(index, value):
 	@param index: index in string T of match
 	@param value: tuple (index, value) number of shingle, text of shingle
 	"""
-	global match_count
-	match_count += 1
+	global ac_match_count
+	ac_match_count += 1
 	print(index)
 	print(value)
 
-def aho_corasick(shingles, file_names):
+def run_aho_corasick(shingles, file_names):
 	"""Uses Aho-Corasick automaton to find all matches
 
 	@param shingles: list of shingles of test document
 	@param file_names: list of all file_names to be checked for shingles
-	@return: time elapsed to match all shingles to all files
+	@return: (time, matches) time elapsed to match all shingles to all files
+	total number of matches found in text
 	"""
 
 	#start the timer on aho-corasick
@@ -100,38 +103,39 @@ def aho_corasick(shingles, file_names):
 		ac.find_all(text, ac_match_callback)
 
 	elapsed_time = time.time() - start_time
-	print("TOTAL MATCHES: {matches}".format(matches=match_count))
-	return elapsed_time
+	return Result(elapsed_time, ac_match_count)
 
 
 ##### RABIN KARP #####
-def rabin_karp(shingles, file_names):
+def run_rabin_karp(test_file_text, file_names):
 	"""Uses Rabin-Karp algorithm to find all matches
 
 	@param shingles: list of shingles of test document
 	@param file_names: list of all file_names to be checked for shingles
-	@return: time elapsed to match all shingles to all files
+	@return: Result(time, matches) time elapsed to match all shingles to all files
+	total number of matches found in text
 	"""
 
 	#start the timer on rabin-karp
 	start_time = time.time()
 
 	###### TODO: IMPLEMENT THIS ######
+	partern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, SHINGLE_LEN)
 
 	elapsed_time = time.time() - start_time
-	print("TOTAL MATCHES: {matches}".format(matches=match_count))
-	return elapsed_time
+	return Result(elapsed_time, 0)
 
 
 ##### COMMENTZ WALTER #####
 
 
-def commentz_walter(shingles, file_names):
+def run_commentz_walter(shingles, file_names):
 	"""Uses Commentz-Walter algorithm to find all matches
 
 	@param shingles: list of shingles of test document
 	@param file_names: list of all file_names to be checked for shingles
-	@return: time elapsed to match all shingles to all files
+	@return: Result(time, matches) time elapsed to match all shingles to all files
+	total number of matches found in text
 	"""
 
 	#start the timer on commentz-walter
@@ -140,34 +144,39 @@ def commentz_walter(shingles, file_names):
 	###### TODO: IMPLEMENT THIS ######
 
 	elapsed_time = time.time() - start_time
-	print("TOTAL MATCHES: {matches}".format(matches=match_count))
-	return elapsed_time
+	return Result(elapsed_time, 0)
 
 ##### MAIN #####
 
 
-def run_tests(shingles, file_names, algorithm):
-""" Runs all tests on algorithm and prints and returns the runtime
+def run_tests(shingles, file_names, test_file_text, algorithm):
+	""" Runs all tests on algorithm and prints and returns the runtime
 
-	@param shingles: list of shingles of test document
-	@param file_names: list of all file_names to be checked for shingles
-	@param algorithm: Algorithm to be tested
-	@return: time elapsed to match all shingles to all files
-"""
+		@param shingles: list of shingles of test document
+		@param file_names: list of all file_names to be checked for shingles
+		@param algorithm: Algorithm to be tested
+		@return: time elapsed to match all shingles to all files
+	"""
 
 	if(algorithm == Algorithm.aho_corasick):
-		runtime = aho_corasick(shingles, file_names)
+		result = run_aho_corasick(shingles, file_names)
+		print("####   AHO-CORASICK   ####")
 
 	if(algorithm == Algorithm.rabin_karp):
-		runtime = rabin_karp(shingles, file_names)
+		result = run_rabin_karp(test_file_text, file_names)
+		print("####    RABIN-KARP    ####")
 
 	if(algorithm == Algorithm.commentz_walter):
-		runtime = commentz_walter(shingles, file_names)
+		result = run_commentz_walter(shingles, file_names)
+		print("#### COMMENTZ-WALTER  ####")
 	
-	print("ELAPSED TIME: {time}".format(time=runtime))
-	return runtime
+	print("ELAPSED TIME: {time}".format(time=result.runtime))
+	print("TOTAL MATCHES: {matches}".format(matches=result.matches))
+	return result.runtime
 
 if __name__ == '__main__':
+
+	Result = namedtuple('Result', ['runtime', 'matches'])
 
 	#test of document we want to detect plararism in
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
@@ -176,9 +185,9 @@ if __name__ == '__main__':
 	#filenames of all other files
 	file_names = files_in_directory(CORPUS)
 
-	run_tests(shingles, file_names, Algorithm.aho_corasick)
-	run_tests(shingles, file_names, Algorithm.rabin_karp)
-	run_tests(shingles, file_names, Algorithm.commentz_walter)
+	run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
+	run_tests(shingles, file_names, test_file_text, Algorithm.rabin_karp)
+	run_tests(shingles, file_names, test_file_text, Algorithm.commentz_walter)
 
 
 
