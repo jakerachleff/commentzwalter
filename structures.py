@@ -282,12 +282,13 @@ class CWAuto(Trie):
 		matches = deque()
 
 		while (i < len(text)):
+			print(i)
 			# Scan Phase
-			# import pdb; pdb.set_trace()
 			v = self.root
 			j = 0
 			char_to_find = text[i - j]
-			while (self.node_has_child(v, char_to_find)):
+			while self.node_has_child(v, char_to_find) and (i - j >= 0):
+				print (j)
 				if i - j == -1:
 					print ("we fucked up")
 
@@ -305,6 +306,7 @@ class CWAuto(Trie):
 				char_to_find = text[i-j]
 
 			# Shift Phase
+			# import pdb; pdb.set_trace()
 			i += self.shift_func(v, j)
 
 		for match, pos in matches:

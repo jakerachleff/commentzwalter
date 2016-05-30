@@ -61,8 +61,17 @@ def test_CWAuto():
 	our_CWAuto.lookup("cacbaa")
 
 	print("\n\nNow, testing its CWAUTO ability:")
+	our_CWAuto = CWAuto()
+	our_CWAuto.add_word("hello")
+	our_CWAuto.add_word("help")
+	our_CWAuto.add_word("howdy")
+	our_CWAuto.add_word("james")
+	our_CWAuto.add_word("jake")
+	our_CWAuto.add_word("ello")
+	our_CWAuto.add_word("hello")
+	our_CWAuto.add_word("shello")
 	our_CWAuto.create_failure_links()
-	our_CWAuto.report_all_matches("cacbaaba")
+	our_CWAuto.report_all_matches("jameshelloa;sldkfj;asdljfadello")
 	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n")
 
 def main():
