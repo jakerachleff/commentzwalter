@@ -157,10 +157,20 @@ class CWAuto(Trie):
 	def __init__(self):
 		Trie.__init__(self)
 		self.min_depth = None
+		self.char_lookup_table = {}
 
 	def add_word(self, word):
 		word = word[::-1]
 		super().add_word(word)
+		pos = 1
+
+		#Initialize character table
+		for character in word:
+			min_char_depth = self.char_lookup_table.get(character)
+			if (min_char_depth is None) or (min_char_depth > pos):
+				self.char_lookup_table[character] = pos
+			pos += 1
+
 		if self.min_depth is None:
 			self.min_depth = len(word)
 		elif len(word) < self.min_depth:
@@ -171,6 +181,7 @@ class CWAuto(Trie):
 		super().lookup(word)
 
 	def create_failure_links(self):
+		print (self.char_lookup_table)
 		bfs_queue = deque()
 
 		# First, set suffix links for first children to root
@@ -194,7 +205,5 @@ class CWAuto(Trie):
 			if AC_suffix_node.min_difference == -1 or AC_suffix_node.min_difference > current_node.depth - AC_suffix_node.depth:
 				AC_suffix_node.min_difference = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
-				if AC_suffix_node.word is not None:
-					print (AC_suffix_node.word + " now points to character " + current_node.character)
 
 
