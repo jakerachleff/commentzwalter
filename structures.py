@@ -235,23 +235,24 @@ class CWAuto(Trie):
 			current_node.ACsuffix_link = AC_suffix_node
 			suffix_is_word = current_node.ACsuffix_link.word is not None
 			current_node.ACoutput_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.ACoutput_link
+			if current_node.ACoutput_link is not None:
+				print ("Setting a real output link for current node (%s, %d) and output node (%s, %d)" 
+					% (current_node.character, current_node.depth, current_node.ACoutput_link.character, current_node.ACoutput_link.depth))
 
-			# Set reverse suffix links
+
+			# Set reverse suffix links and output links
+			is_set2 = current_node.word is not None
 			if AC_suffix_node.min_difference_s1 == -1 or AC_suffix_node.min_difference_s1 > current_node.depth - AC_suffix_node.depth:
 				print ("Setting a reverse suffix link for current node (%s, %d) and suffix node (%s, %d)" 
 					% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
 				AC_suffix_node.min_difference_s1 = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
-
-			# Set reverse output links
-			if (current_node.word is None) or (current_node.ACoutput_link is None):
-				continue
-
-			potential_s2_node = current_node.ACoutput_link
-			if potential_s2_node.min_difference_s2 == NOT_SET or potential_s2_node.min_difference_s2 > current_node.depth - potential_s2_node.depth:
-				print ("Setting a reverse output link")
-				potential_s2_node.min_difference_s1 = current_node.depth - potential_s2_node.depth
-				potential_s2_node.CWsuffix_link = current_node
+			if is_set2:
+				if AC_suffix_node.min_difference_s2 == -1 or AC_suffix_node.min_difference_s2 > current_node.depth - AC_suffix_node.depth:
+					print ("Setting a reverse output link for current node (%s, %d) and suffix node (%s, %d)" 
+						% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
+					AC_suffix_node.min_difference_s2 = current_node.depth - AC_suffix_node.depth
+					AC_suffix_node.CWoutput_link = current_node
 
 		self.initialize_shift_values()
 
