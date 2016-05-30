@@ -36,9 +36,25 @@ def test_ACAuto():
 	our_ACAuto.report_all_matches("jameshelloa;sldkfj;asdljfadello")
 	print("DONE TESTING THE AHO CORSICK DATA STRUCTURE\n\n")
 
+def test_CWAuto():
+	print("TESTING THE CWAUTO DATA STRUCTURE")
+	our_trie = Trie()
+	our_trie.add_word("hello")
+	our_trie.add_word("help")
+	our_trie.add_word("howdy")
+	our_trie.add_word("james")
+	our_trie.add_word("hello")
+	our_trie.lookup("helpo")
+	our_trie.lookup("hello")
+	our_trie.lookup("olleh")
+	our_trie.lookup("help")
+	our_trie.lookup("howdy")
+	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n\n")
+
 def main():
 	test_Trie()
 	test_ACAuto()
+	test_CWAuto()
 	
 
 if __name__ == "__main__":

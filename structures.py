@@ -150,15 +150,24 @@ class ACAuto(Trie):
 		for match, pos in matches:
 			print ("matched with " + match + " at position " + str(pos))
 
+class CWAuto(Trie):
+	def create_node(self, character, depth, parent):
+		return CWNode(character, depth, parent)
 
+	def __init__(self):
+		Trie.__init__(self)
+		self.min_depth = None
 
+	def add_word(self, word):
+		word = word[::-1]
+		super().add_word(self, word)
+		if self.min_depth is None:
+			self.min_depth = len(word)
+		elif len(word) < min_depth:
+			self.min_depth = len(word)
 
-
-
-
-
-
-
-
+	def lookup(self, word):
+		word = word[::-1]
+		super().lookup(self, word)
 
 
