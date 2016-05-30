@@ -51,7 +51,7 @@ def test_CWAuto():
 	our_CWAuto.lookup("howdy")
 
 	print("\n\nNow, testing its CWAUTO ability:")
-	our_ACAuto.create_failure_links()
+	our_CWAuto.create_failure_links()
 	print("DONE TESTING THE CWAUTO DATA STRUCTURE\n\n")
 
 def main():

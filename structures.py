@@ -170,7 +170,7 @@ class CWAuto(Trie):
 		word = word[::-1]
 		super().lookup(word)
 
-	def create_failure_links():
+	def create_failure_links(self):
 		bfs_queue = deque()
 
 		# First, set suffix links for first children to root
@@ -190,6 +190,7 @@ class CWAuto(Trie):
 
 			# Set suffix nodes in reverse
 			AC_suffix_node = self.get_AC_suffix_link(current_node)
+			current_node.ACsuffix_link = AC_suffix_node
 			if AC_suffix_node.min_difference == -1 or AC_suffix_node.min_difference > current_node.depth - AC_suffix_node.depth:
 				AC_suffix_node.min_difference = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
