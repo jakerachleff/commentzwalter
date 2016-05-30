@@ -49,6 +49,26 @@ class RollingHash:
 
 # 	return -1
 
+def rabin_karp_get_matches(text, k, shingles, pattern_set):
+	"""
+	"""
+	rc_match_count = 0
+	# for s in pattern_set:
+	# 	print(s)
+
+	hs = RollingHash(text, k)
+	for i in range(len(text)- k +1):
+		if hs.hash in pattern_set:
+			if hs.text() in shingles:
+				#print(hs.text())
+				rc_match_count += 1
+		hs.update()
+
+	#print("HERE")
+	return rc_match_count
+
+
+
 def rabin_karp_pattern_set(test_file_text, k):
 	"""
 	"""
@@ -60,7 +80,7 @@ def rabin_karp_pattern_set(test_file_text, k):
 
 	hs 	 = RollingHash(test_file_text, k)
 	for i in range(len(test_file_text) - k + 1):
-		digest_set.add(hs.digest)
+		digest_set.add(hs.hash)
 		hs.update()
 	
 	return digest_set

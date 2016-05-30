@@ -17,9 +17,9 @@ import time
 from enum import Enum
 from collections import namedtuple
 
-TEST_FILE = "corpus/text3"
-CORPUS = "corpus/"
-SHINGLE_LEN = 15
+TEST_FILE = "corpus/text4"
+CORPUS = "temp_corpus/"
+SHINGLE_LEN = 30
 
 ac_match_count = 0
 
@@ -82,8 +82,8 @@ def ac_match_callback(index, value):
 	"""
 	global ac_match_count
 	ac_match_count += 1
-	print(index)
-	print(value)
+	#print(index)
+	print(value[0])
 
 def run_aho_corasick(shingles, file_names):
 	"""Uses Aho-Corasick automaton to find all matches
@@ -98,6 +98,7 @@ def run_aho_corasick(shingles, file_names):
 	start_time = time.time()
 
 	ac = build_ahocorasick(shingles)
+
 	for file_name in file_names:
 		text = ''.join([line.rstrip('\n') for line in open(file_name)])
 		ac.find_all(text, ac_match_callback)
@@ -107,7 +108,7 @@ def run_aho_corasick(shingles, file_names):
 
 
 ##### RABIN KARP #####
-def run_rabin_karp(test_file_text, file_names):
+def run_rabin_karp(test_file_text, shingles, file_names):
 	"""Uses Rabin-Karp algorithm to find all matches
 
 	@param shingles: list of shingles of test document
@@ -116,14 +117,23 @@ def run_rabin_karp(test_file_text, file_names):
 	total number of matches found in text
 	"""
 
+	#TODO: Decide if this should come before or after timer
+	shingles = set(shingles)
+
 	#start the timer on rabin-karp
 	start_time = time.time()
 
 	###### TODO: IMPLEMENT THIS ######
-	partern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, SHINGLE_LEN)
+	pattern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, SHINGLE_LEN)
+	rc_matches_count = 0
+
+	for file_name in file_names:
+		text = ''.join([line.rstrip('\n') for line in open(file_name)])
+		rc_matches_count += rabin_karp.rabin_karp_get_matches(text, SHINGLE_LEN, shingles, pattern_set)
+
 
 	elapsed_time = time.time() - start_time
-	return Result(elapsed_time, 0)
+	return Result(elapsed_time, rc_matches_count)
 
 
 ##### COMMENTZ WALTER #####
@@ -159,16 +169,18 @@ def run_tests(shingles, file_names, test_file_text, algorithm):
 	"""
 
 	if(algorithm == Algorithm.aho_corasick):
-		result = run_aho_corasick(shingles, file_names)
 		print("####   AHO-CORASICK   ####")
+		result = run_aho_corasick(shingles, file_names)
+
 
 	if(algorithm == Algorithm.rabin_karp):
-		result = run_rabin_karp(test_file_text, file_names)
 		print("####    RABIN-KARP    ####")
+		result = run_rabin_karp(test_file_text, shingles, file_names)
 
 	if(algorithm == Algorithm.commentz_walter):
-		result = run_commentz_walter(shingles, file_names)
 		print("#### COMMENTZ-WALTER  ####")
+		result = run_commentz_walter(shingles, file_names)
+		
 	
 	print("ELAPSED TIME: {time}".format(time=result.runtime))
 	print("TOTAL MATCHES: {matches}".format(matches=result.matches))
@@ -188,6 +200,8 @@ if __name__ == '__main__':
 	run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
 	run_tests(shingles, file_names, test_file_text, Algorithm.rabin_karp)
 	run_tests(shingles, file_names, test_file_text, Algorithm.commentz_walter)
+
+	print(len(test_file_text))
 
 
 
