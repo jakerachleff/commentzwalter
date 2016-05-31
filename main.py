@@ -18,8 +18,8 @@ import time
 from enum import Enum
 from collections import namedtuple
 
-TEST_FILE = "corpus/text4"
-CORPUS = "corpus/"
+TEST_FILE = "corpus/testfile"
+CORPUS = "article_scraper/articles/all_articles"
 SHINGLE_LEN = 30
 
 ac_match_count = 0
@@ -118,6 +118,7 @@ def run_rabin_karp(test_file_text, shingles, file_names):
 	total number of matches found in text
 	"""
 
+
 	#TODO: Decide if this should come before or after timer
 	shingles = set(shingles)
 
@@ -198,7 +199,7 @@ if __name__ == '__main__':
 	#filenames of all other files
 	file_names = files_in_directory(CORPUS)
 
-	run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
+	#run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
 	run_tests(shingles, file_names, test_file_text, Algorithm.rabin_karp)
 	run_tests(shingles, file_names, test_file_text, Algorithm.commentz_walter)
 
