@@ -20,7 +20,7 @@ from collections import namedtuple
 
 TEST_FILE = "corpus/testfile"
 CORPUS = "article_scraper/articles/all_articles"
-SHINGLE_LEN = 30
+SHINGLE_LEN = 100
 
 ac_match_count = 0
 
@@ -83,8 +83,6 @@ def ac_match_callback(index, value):
 	"""
 	global ac_match_count
 	ac_match_count += 1
-	#print(index)
-	print(value[0])
 
 def run_aho_corasick(shingles, file_names):
 	"""Uses Aho-Corasick automaton to find all matches
@@ -174,7 +172,6 @@ def run_tests(shingles, file_names, test_file_text, algorithm):
 		print("####   AHO-CORASICK   ####")
 		result = run_aho_corasick(shingles, file_names)
 
-
 	if(algorithm == Algorithm.rabin_karp):
 		print("####    RABIN-KARP    ####")
 		result = run_rabin_karp(test_file_text, shingles, file_names)
@@ -192,6 +189,8 @@ if __name__ == '__main__':
 
 	Result = namedtuple('Result', ['runtime', 'matches'])
 
+	print("SHINGLE LENGTH: {len}".format(len=SHINGLE_LEN))
+
 	#test of document we want to detect plararism in
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
 	shingles = get_shingles(test_file_text, SHINGLE_LEN)
@@ -199,11 +198,9 @@ if __name__ == '__main__':
 	#filenames of all other files
 	file_names = files_in_directory(CORPUS)
 
-	#run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
+	run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
 	run_tests(shingles, file_names, test_file_text, Algorithm.rabin_karp)
 	run_tests(shingles, file_names, test_file_text, Algorithm.commentz_walter)
-
-	print(len(test_file_text))
 
 
 

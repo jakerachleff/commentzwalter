@@ -14,7 +14,6 @@ Main file for testing runtimes of Aho-Corasick vs Rabin Karp vs
 Commentz Walter algorithms for plagarism using k-shingles of a test
 file against a corpus of other files.
 """
-import pdb
 
 class RollingHash:
 	"""
@@ -30,14 +29,8 @@ class RollingHash:
 		self.hash = 0
 		
 		for i in range(0, size):
-			# print("i = {i}".format(i=i))
-			# print("string length = {len}".format(len=len(self.str)))
-			# print(self.str[i])
-
 			self.hash += ord(self.str[i])
-			#pdb.set_trace()
-
-		
+	
 		self.init = 0
 		self.end  = size
 		
@@ -74,7 +67,6 @@ def rabin_karp_get_matches(text, k, shingles, pattern_set):
 	for i in range(len(text)- k +1):
 		if hs.hash in pattern_set:
 			if hs.text() in shingles:
-				print(hs.text())
 				rc_match_count += 1
 		hs.update()
 
