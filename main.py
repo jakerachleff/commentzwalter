@@ -17,6 +17,8 @@ import rabin_karp
 import time
 from enum import Enum
 from collections import namedtuple
+from structures import ACAuto
+from structures import CWAuto
 
 TEST_FILE = "corpus/testfile"
 CORPUS = "article_scraper/articles/all_articles"
@@ -50,17 +52,23 @@ def files_in_directory(dirname):
 ##### AHO CORASICK #####
 
 
-def build_ahocorasick(shingles):
+def build_automaton(shingles, automaton):
 	"""Return an Aho-Corasick Automaton for a list of shingles
 
 	@param shingles: list of k-shingles
 	@return: Aho-Corasick Automaton for shingles
 	"""
-	a = ahocorasick.Automaton()
-	for index, shingle in enumerate(shingles):
-		a.add_word(shingle, (index, shingle))
-	a.make_automaton()
+	a = ACAuto() if automaton == Algorithm.aho_corasick else CWAuto()
+	for shingle in shingles:
+		a.add_word(shingle)
+	a.create_failure_links()
 	return a
+
+	# a = ahocorasick.Automaton()
+	# for index, shingle in enumerate(shingles):
+	# 	a.add_word(shingle, (index, shingle))
+	# a.make_automaton()
+	# return a
 
 def get_shingles(text, k):
 	"""Return a list of the k-singles of a text file
@@ -96,14 +104,15 @@ def run_aho_corasick(shingles, file_names):
 	#start the timer on aho-corasick
 	start_time = time.time()
 
-	ac = build_ahocorasick(shingles)
+	ac_total_matches = 0
+	ac = build_automaton(shingles, Algorithm.aho_corasick)
 
 	for file_name in file_names:
 		text = ''.join([line.rstrip('\n') for line in open(file_name)])
-		ac.find_all(text, ac_match_callback)
+		ac_total_matches += ac.report_all_matches(text)
 
 	elapsed_time = time.time() - start_time
-	return Result(elapsed_time, ac_match_count)
+	return Result(elapsed_time, ac_total_matches)
 
 
 ##### RABIN KARP #####
@@ -147,13 +156,17 @@ def run_commentz_walter(shingles, file_names):
 	total number of matches found in text
 	"""
 
-	#start the timer on commentz-walter
 	start_time = time.time()
 
-	###### TODO: IMPLEMENT THIS ######
+	cw_total_matches = 0
+	cw = build_automaton(shingles, Algorithm.commentz_walter)
+
+	for file_name in file_names:
+		text = ''.join([line.rstrip('\n') for line in open(file_name)])
+		cw_total_matches += cw.report_all_matches(text)
 
 	elapsed_time = time.time() - start_time
-	return Result(elapsed_time, 0)
+	return Result(elapsed_time, cw_total_matches)
 
 
 ##### MAIN #####

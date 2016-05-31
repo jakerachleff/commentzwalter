@@ -160,8 +160,11 @@ class ACAuto(Trie):
 
 			pos += 1
 
+		return len(matches)
 		for match, pos in matches:
 			print ("matched with " + match + " at position " + str(pos))
+
+
 
 class CWAuto(Trie):
 	def create_node(self, character, depth, parent):
@@ -195,7 +198,7 @@ class CWAuto(Trie):
 
 	def initialize_shift_values(self):
 		bfs_queue = deque()
-		print ("min depth is " + str(self.min_depth))
+		#print ("min depth is " + str(self.min_depth))
 		self.root.shift1 = 1
 		self.root.shift2 = self.min_depth
 
@@ -216,13 +219,13 @@ class CWAuto(Trie):
 			else:
 				current_node.shift2 = current_node.min_difference_s2
 
-			print (current_node.character + ": shift1 is " + str(current_node.shift1) + " and shift2 is " + str(current_node.shift2))
+			#print (current_node.character + ": shift1 is " + str(current_node.shift1) + " and shift2 is " + str(current_node.shift2))
 
 			for key in current_node.children:
 				bfs_queue.append(current_node.children[key])
 
 	def create_failure_links(self):
-		print (self.char_lookup_table)
+		#print (self.char_lookup_table)
 		bfs_queue = deque()
 
 		# First, set suffix links for first children to root
@@ -246,21 +249,21 @@ class CWAuto(Trie):
 			suffix_is_word = current_node.ACsuffix_link.word is not None
 			current_node.ACoutput_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.ACoutput_link
 			if current_node.ACoutput_link is not None:
-				print ("Setting a real output link for current node (%s, %d) and output node (%s, %d)" 
-					% (current_node.character, current_node.depth, current_node.ACoutput_link.character, current_node.ACoutput_link.depth))
-
+				#print ("Setting a real output link for current node (%s, %d) and output node (%s, %d)" 
+				#	% (current_node.character, current_node.depth, current_node.ACoutput_link.character, current_node.ACoutput_link.depth))
+				pass
 
 			# Set reverse suffix links and output links
 			is_set2 = current_node.word is not None
 			if AC_suffix_node.min_difference_s1 == -1 or AC_suffix_node.min_difference_s1 > current_node.depth - AC_suffix_node.depth:
-				print ("Setting a reverse suffix link for current node (%s, %d) and suffix node (%s, %d)" 
-					% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
+				#print ("Setting a reverse suffix link for current node (%s, %d) and suffix node (%s, %d)" 
+				#	% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
 				AC_suffix_node.min_difference_s1 = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
 			if is_set2:
 				if AC_suffix_node.min_difference_s2 == -1 or AC_suffix_node.min_difference_s2 > current_node.depth - AC_suffix_node.depth:
-					print ("Setting a reverse output link for current node (%s, %d) and suffix node (%s, %d)" 
-						% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
+					#print ("Setting a reverse output link for current node (%s, %d) and suffix node (%s, %d)" 
+					#	% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
 					AC_suffix_node.min_difference_s2 = current_node.depth - AC_suffix_node.depth
 					AC_suffix_node.CWoutput_link = current_node
 
@@ -286,7 +289,7 @@ class CWAuto(Trie):
 		matches = deque()
 
 		while (i < len(text)):
-			print("i is equal to: " + str(i))
+			#print("i is equal to: " + str(i))
 			# Scan Phase
 			v = self.root
 			j = 0
@@ -294,13 +297,14 @@ class CWAuto(Trie):
 			while self.node_has_child(v, char_to_find) and (i - j >= 0):
 				#print (j)
 				if i - j == -1:
-					print ("we fucked up")
+					#print ("we fucked up")
+					pass
 
 				v = v.children[char_to_find]
 				j += 1
 
 				if (v.word is not None):
-					print("matching a word")
+					#print("matching a word")
 					matches.append((v.word[::-1], i - j + 1))
 
 				searcher = v.ACoutput_link
@@ -315,6 +319,7 @@ class CWAuto(Trie):
 			#import pdb; pdb.set_trace()
 			i += self.shift_func(v, j)
 
+		return len(matches)
 		for match, pos in matches:
 			print ("matched " + match + " at " + str(pos))
 
