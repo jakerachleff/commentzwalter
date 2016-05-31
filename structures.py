@@ -161,8 +161,6 @@ class ACAuto(Trie):
 			pos += 1
 
 		return len(matches)
-		for match, pos in matches:
-			print ("matched with " + match + " at position " + str(pos))
 
 
 
@@ -198,7 +196,6 @@ class CWAuto(Trie):
 
 	def initialize_shift_values(self):
 		bfs_queue = deque()
-		#print ("min depth is " + str(self.min_depth))
 		self.root.shift1 = 1
 		self.root.shift2 = self.min_depth
 
@@ -225,7 +222,6 @@ class CWAuto(Trie):
 				bfs_queue.append(current_node.children[key])
 
 	def create_failure_links(self):
-		#print (self.char_lookup_table)
 		bfs_queue = deque()
 
 		# First, set suffix links for first children to root
@@ -289,25 +285,18 @@ class CWAuto(Trie):
 		matches = deque()
 
 		while (i < len(text)):
-			#print("i is equal to: " + str(i))
 			# Scan Phase
 			v = self.root
 			j = 0
 			char_to_find = text[i - j]
 			while self.node_has_child(v, char_to_find) and (i - j >= 0):
-				#print (j)
-				if i - j == -1:
-					#print ("we fucked up")
-					pass
-
 				v = v.children[char_to_find]
 				j += 1
 
 				if (v.word is not None):
-					#print("matching a word")
 					matches.append((v.word[::-1], i - j + 1))
 
-				searcher = v.ACoutput_link
+				#searcher = v.ACoutput_link
 				#while (searcher is not None):
 				#	print("matching a word from output links")
 				#	matches.append((searcher.word[::-1], i - j + 1))
@@ -320,6 +309,5 @@ class CWAuto(Trie):
 			i += self.shift_func(v, j)
 
 		return len(matches)
-		for match, pos in matches:
-			print ("matched " + match + " at " + str(pos))
+
 

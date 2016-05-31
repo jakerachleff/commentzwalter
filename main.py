@@ -12,7 +12,6 @@ file against a corpus of other files.
 """
 
 import pathlib
-import ahocorasick
 import rabin_karp
 import time
 from enum import Enum
