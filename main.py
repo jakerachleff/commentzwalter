@@ -12,7 +12,6 @@ file against a corpus of other files.
 """
 
 import pathlib
-import ahocorasick
 import rabin_karp
 import time
 from enum import Enum
@@ -172,14 +171,14 @@ def run_commentz_walter(shingles, file_names):
 ##### MAIN #####
 
 
-def run_tests(shingles, file_names, test_file_text, algorithm):
+def run_tests(file_names, test_file_text, algorithm):
 	""" Runs all tests on algorithm and prints and returns the runtime
 
-		@param shingles: list of shingles of test document
 		@param file_names: list of all file_names to be checked for shingles
 		@param algorithm: Algorithm to be tested
 		@return: time elapsed to match all shingles to all files
 	"""
+	shingles = get_shingles(test_file_text, SHINGLE_LEN)
 
 	if(algorithm == Algorithm.aho_corasick):
 		print("####   AHO-CORASICK   ####")
@@ -202,18 +201,19 @@ if __name__ == '__main__':
 
 	Result = namedtuple('Result', ['runtime', 'matches'])
 
-	print("SHINGLE LENGTH: {len}".format(len=SHINGLE_LEN))
+	
 
 	#test of document we want to detect plararism in
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
-	shingles = get_shingles(test_file_text, SHINGLE_LEN)
 	
 	#filenames of all other files
 	file_names = files_in_directory(CORPUS)
 
-	run_tests(shingles, file_names, test_file_text, Algorithm.aho_corasick)
-	run_tests(shingles, file_names, test_file_text, Algorithm.rabin_karp)
-	run_tests(shingles, file_names, test_file_text, Algorithm.commentz_walter)
+	print("SHINGLE LENGTH: {len}".format(len=SHINGLE_LEN))
+
+	run_tests(file_names, test_file_text, Algorithm.aho_corasick)
+	run_tests(file_names, test_file_text, Algorithm.rabin_karp)
+	run_tests(file_names, test_file_text, Algorithm.commentz_walter)
 
 
 
