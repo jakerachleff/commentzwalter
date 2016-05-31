@@ -274,7 +274,11 @@ class CWAuto(Trie):
 		return min_depth
 
 	def shift_func(self, node, j):
-		max_of_s1_and_char = max(self.char_func(node.character) - j - 1, node.shift1)
+		max_of_s1_and_char = 0
+		if node.character is None:
+			max_of_s1_and_char = node.shift1
+		else:
+			max_of_s1_and_char = max(self.char_func(node.character) - j - 1, node.shift1)
 		return min(max_of_s1_and_char, node.shift2)
 
 	def report_all_matches(self, text):
@@ -282,13 +286,13 @@ class CWAuto(Trie):
 		matches = deque()
 
 		while (i < len(text)):
-			print(i)
+			print("i is equal to: " + str(i))
 			# Scan Phase
 			v = self.root
 			j = 0
 			char_to_find = text[i - j]
 			while self.node_has_child(v, char_to_find) and (i - j >= 0):
-				print (j)
+				#print (j)
 				if i - j == -1:
 					print ("we fucked up")
 
@@ -296,17 +300,19 @@ class CWAuto(Trie):
 				j += 1
 
 				if (v.word is not None):
+					print("matching a word")
 					matches.append((v.word[::-1], i - j + 1))
 
 				searcher = v.ACoutput_link
-				while (searcher is not None):
-					matches.append((searcher.word[::-1], i - j + 1))
-					searcher = searcher.ACoutput_link
+				#while (searcher is not None):
+				#	print("matching a word from output links")
+				#	matches.append((searcher.word[::-1], i - j + 1))
+				#	searcher = searcher.ACoutput_link
 
 				char_to_find = text[i-j]
 
 			# Shift Phase
-			# import pdb; pdb.set_trace()
+			#import pdb; pdb.set_trace()
 			i += self.shift_func(v, j)
 
 		for match, pos in matches:

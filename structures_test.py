@@ -59,6 +59,8 @@ def test_CWAuto():
 	our_CWAuto.lookup("aba")
 	our_CWAuto.lookup("tom")
 	our_CWAuto.lookup("cacbaa")
+	our_CWAuto.create_failure_links()
+	our_CWAuto.report_all_matches("cacbaababababa")
 
 	print("\n\nNow, testing its CWAUTO ability:")
 	our_CWAuto = CWAuto()
@@ -66,6 +68,7 @@ def test_CWAuto():
 	our_CWAuto.add_word("help")
 	our_CWAuto.add_word("howdy")
 	our_CWAuto.add_word("james")
+	our_CWAuto.add_word("ame")
 	our_CWAuto.add_word("jake")
 	our_CWAuto.add_word("ello")
 	our_CWAuto.add_word("hello")
