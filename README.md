@@ -4,4 +4,4 @@ An implementation of both Aho Corasick and Commentz-Walter string matching based
 
 Please note, if you are to run our main.py, please supply your own articles. The current version of main.py will crash since we do not store our article list on github.
 
-The implementations of Aho Corasick, Commentz-Walter are, however, fully functional.
+The implementations of Aho Corasick and Commentz-Walter found in structures.py are, however, fully functional.
