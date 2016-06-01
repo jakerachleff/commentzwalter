@@ -55,9 +55,6 @@ class Trie(object):
 				next_node = self.create_node(character, current_depth, current_node)
 				current_node.children[character] = next_node
 
-			if not next_node.depth == current_depth:
-				print ("ERROR: Incorrect depths")
-
 			current_node = next_node
 			current_depth += 1
 
@@ -73,13 +70,10 @@ class Trie(object):
 		for character in word:
 			next_node = current_node.children.get(character)
 			if not next_node:
-				print ("The word " + word + " is invalid")
 				return False
 
 			current_node = next_node
 
-		if not (current_node.word == word):
-			print ("You suck at implementing tries")
 		return True
 
 	def is_root(self, node):
@@ -216,8 +210,6 @@ class CWAuto(Trie):
 			else:
 				current_node.shift2 = current_node.min_difference_s2
 
-			#print (current_node.character + ": shift1 is " + str(current_node.shift1) + " and shift2 is " + str(current_node.shift2))
-
 			for key in current_node.children:
 				bfs_queue.append(current_node.children[key])
 
@@ -245,21 +237,15 @@ class CWAuto(Trie):
 			suffix_is_word = current_node.ACsuffix_link.word is not None
 			current_node.ACoutput_link = current_node.ACsuffix_link if suffix_is_word else current_node.ACsuffix_link.ACoutput_link
 			if current_node.ACoutput_link is not None:
-				#print ("Setting a real output link for current node (%s, %d) and output node (%s, %d)" 
-				#	% (current_node.character, current_node.depth, current_node.ACoutput_link.character, current_node.ACoutput_link.depth))
 				pass
 
 			# Set reverse suffix links and output links
 			is_set2 = current_node.word is not None
 			if AC_suffix_node.min_difference_s1 == -1 or AC_suffix_node.min_difference_s1 > current_node.depth - AC_suffix_node.depth:
-				#print ("Setting a reverse suffix link for current node (%s, %d) and suffix node (%s, %d)" 
-				#	% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
 				AC_suffix_node.min_difference_s1 = current_node.depth - AC_suffix_node.depth
 				AC_suffix_node.CWsuffix_link = current_node
 			if is_set2:
 				if AC_suffix_node.min_difference_s2 == -1 or AC_suffix_node.min_difference_s2 > current_node.depth - AC_suffix_node.depth:
-					#print ("Setting a reverse output link for current node (%s, %d) and suffix node (%s, %d)" 
-					#	% (current_node.character, current_node.depth, AC_suffix_node.character, AC_suffix_node.depth))
 					AC_suffix_node.min_difference_s2 = current_node.depth - AC_suffix_node.depth
 					AC_suffix_node.CWoutput_link = current_node
 
@@ -296,18 +282,11 @@ class CWAuto(Trie):
 				if (v.word is not None):
 					matches.append((v.word[::-1], i - j + 1))
 
-				#searcher = v.ACoutput_link
-				#while (searcher is not None):
-				#	print("matching a word from output links")
-				#	matches.append((searcher.word[::-1], i - j + 1))
-				#	searcher = searcher.ACoutput_link
-
 				char_to_find = text[i-j]
 
 			if (j > i):
 				j = i
-			# Shift Phase
-			#import pdb; pdb.set_trace()
+
 			i += self.shift_func(v, j)
 
 		return len(matches)
