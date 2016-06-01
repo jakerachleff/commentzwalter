@@ -23,7 +23,8 @@ from structures import CWAuto
 TEST_FILE = "corpus/testfile"
 CORPUS_PREFIX = "article_scraper/articles/"
 SHINGLE_CONSTANT = 50
-RANDOM = True
+RANDOM = False
+OUTFILE_PATH = "outfile.txt"
 
 ac_match_count = 0
 
@@ -217,12 +218,27 @@ def run_tests(file_names, test_file_text, shingle_len, shingles, algorithm):
 	print("TOTAL MATCHES: {matches}".format(matches=result.matches))
 	return result.runtime
 
+def write_to_outfile(string_to_write):
+	try:
+		new_file = open(OUTFILE_PATH, 'a')
+		new_file.write(string_to_write)
+		new_file.write('\n')
+		new_file.close()
+
+	except:
+		print('Error creating file {filename}'.format(filename = OUTFILE_PATH))
+
 def run_all_tests(file_names, test_file_text, shingles, shingle_len):
 	print("SHINGLE LENGTH: {len}".format(len=shingle_len))
 
-	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.aho_corasick)
-	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.rabin_karp)
-	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.commentz_walter)
+	ac_runtime = run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.aho_corasick)
+	rk_runtime = run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.rabin_karp)
+	cw_runtime = run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.commentz_walter)
+
+	write_to_outfile("SHINGLE LENGTH: {len}".format(len=shingle_len))
+	write_to_outfile(str(ac_runtime))
+	write_to_outfile(str(rk_runtime))
+	write_to_outfile(str(cw_runtime))
 
 	print("-- -- -- -- -- -- -- -- -- -- -- ")
 
@@ -236,6 +252,8 @@ if __name__ == '__main__':
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
 	
 	for corpus in corpuses:
+		write_to_outfile("CORPUS: {corpus}".format(corpus=corpus))
+
 		#filenames of all other files
 		file_names = files_in_directory(CORPUS_PREFIX + corpus)
 		for i in range(5, 15):
