@@ -14,14 +14,16 @@ file against a corpus of other files.
 import pathlib
 import rabin_karp
 import time
+import random
 from enum import Enum
 from collections import namedtuple
 from structures import ACAuto
 from structures import CWAuto
 
 TEST_FILE = "corpus/testfile"
-CORPUS = "article_scraper/articles/all_articles"
-SHINGLE_LEN = 100
+CORPUS_PREFIX = "article_scraper/articles/"
+SHINGLE_CONSTANT = 50
+RANDOM = False
 
 ac_match_count = 0
 
@@ -69,6 +71,20 @@ def build_automaton(shingles, automaton):
 	# a.make_automaton()
 	# return a
 
+def get_random_shingles(text, k):
+	"""//TODO DOCUMENT
+
+	@param text: string to convert to shingles
+	@param k: length of each single
+	@return: list of shingles
+	"""
+
+	length = len(text)
+
+	all_shingles = [text[i:i+k] for i in range(length) if i + k < length]
+	random_shingles = random.sample(all_shingles, int(len(all_shingles)/SHINGLE_CONSTANT))
+	return random_shingles
+
 def get_shingles(text, k):
 	"""Return a list of the k-singles of a text file
 
@@ -107,6 +123,8 @@ def run_aho_corasick(shingles, file_names):
 	ac = build_automaton(shingles, Algorithm.aho_corasick)
 
 	for file_name in file_names:
+		#print(file_name)
+
 		text = ''.join([line.rstrip('\n') for line in open(file_name)])
 		ac_total_matches += ac.report_all_matches(text)
 
@@ -115,11 +133,12 @@ def run_aho_corasick(shingles, file_names):
 
 
 ##### RABIN KARP #####
-def run_rabin_karp(test_file_text, shingles, file_names):
+def run_rabin_karp(test_file_text, shingles, shingle_len, file_names):
 	"""Uses Rabin-Karp algorithm to find all matches
 
 	@param shingles: list of shingles of test document
 	@param file_names: list of all file_names to be checked for shingles
+	@param shingle_len: length of shingles
 	@return: Result(time, matches) time elapsed to match all shingles to all files
 	total number of matches found in text
 	"""
@@ -131,12 +150,12 @@ def run_rabin_karp(test_file_text, shingles, file_names):
 	#start the timer on rabin-karp
 	start_time = time.time()
 
-	pattern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, SHINGLE_LEN)
+	pattern_set = rabin_karp.rabin_karp_pattern_set(test_file_text, shingle_len)
 	rc_matches_count = 0
 
 	for file_name in file_names:
 		text = ''.join([line.rstrip('\n') for line in open(file_name)])
-		rc_matches_count += rabin_karp.rabin_karp_get_matches(text, SHINGLE_LEN, shingles, pattern_set)
+		rc_matches_count += rabin_karp.rabin_karp_get_matches(text, shingle_len, shingles, pattern_set)
 
 
 	elapsed_time = time.time() - start_time
@@ -171,14 +190,16 @@ def run_commentz_walter(shingles, file_names):
 ##### MAIN #####
 
 
-def run_tests(file_names, test_file_text, algorithm):
+def run_tests(file_names, test_file_text, shingle_len, algorithm):
 	""" Runs all tests on algorithm and prints and returns the runtime
 
 		@param file_names: list of all file_names to be checked for shingles
+		@param test_file_text: text of the file we're testing against
+		@param shingle_len
 		@param algorithm: Algorithm to be tested
 		@return: time elapsed to match all shingles to all files
 	"""
-	shingles = get_shingles(test_file_text, SHINGLE_LEN)
+	shingles = get_shingles(test_file_text, shingle_len) if not RANDOM else get_random_shingles(test_file_text, shingle_len)
 
 	if(algorithm == Algorithm.aho_corasick):
 		print("####   AHO-CORASICK   ####")
@@ -186,7 +207,7 @@ def run_tests(file_names, test_file_text, algorithm):
 
 	if(algorithm == Algorithm.rabin_karp):
 		print("####    RABIN-KARP    ####")
-		result = run_rabin_karp(test_file_text, shingles, file_names)
+		result = run_rabin_karp(test_file_text, shingles, shingle_len, file_names)
 
 	if(algorithm == Algorithm.commentz_walter):
 		print("#### COMMENTZ-WALTER  ####")
@@ -197,23 +218,31 @@ def run_tests(file_names, test_file_text, algorithm):
 	print("TOTAL MATCHES: {matches}".format(matches=result.matches))
 	return result.runtime
 
+def run_all_tests(file_names, test_file_text, shingle_len):
+	print("SHINGLE LENGTH: {len}".format(len=shingle_len))
+
+	run_tests(file_names, test_file_text, shingle_len, Algorithm.aho_corasick)
+	run_tests(file_names, test_file_text, shingle_len, Algorithm.rabin_karp)
+	run_tests(file_names, test_file_text, shingle_len, Algorithm.commentz_walter)
+
+	print("-- -- -- -- -- -- -- -- -- -- -- ")
+
 if __name__ == '__main__':
 
 	Result = namedtuple('Result', ['runtime', 'matches'])
+	corpuses = []
+	corpuses.append("all_articles")
 
-	
-
-	#test of document we want to detect plararism in
+	#test of document we want to detect plagarism in
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
 	
-	#filenames of all other files
-	file_names = files_in_directory(CORPUS)
-
-	print("SHINGLE LENGTH: {len}".format(len=SHINGLE_LEN))
-
-	run_tests(file_names, test_file_text, Algorithm.aho_corasick)
-	run_tests(file_names, test_file_text, Algorithm.rabin_karp)
-	run_tests(file_names, test_file_text, Algorithm.commentz_walter)
+	for corpus in corpuses:
+		#filenames of all other files
+		file_names = files_in_directory(CORPUS_PREFIX + corpus)
+		for i in range(10, 100, 30):
+			print("RANDOM: {random}".format(random=RANDOM))
+			print("CORPUS: {corpus}".format(corpus=corpus))
+			run_all_tests(file_names, test_file_text, i)
 
 
 

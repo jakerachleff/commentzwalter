@@ -62,7 +62,7 @@ class Trie(object):
 			current_depth += 1
 
 		if current_node.word is not None:
-			print ("you have already printed " + word)
+			#print ("you have already printed " + word)
 			return
 
 		current_node.word = word
@@ -304,6 +304,8 @@ class CWAuto(Trie):
 
 				char_to_find = text[i-j]
 
+			if (j > i):
+				j = i
 			# Shift Phase
 			#import pdb; pdb.set_trace()
 			i += self.shift_func(v, j)
