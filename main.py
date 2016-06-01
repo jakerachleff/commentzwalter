@@ -23,7 +23,7 @@ from structures import CWAuto
 TEST_FILE = "corpus/testfile"
 CORPUS_PREFIX = "article_scraper/articles/"
 SHINGLE_CONSTANT = 50
-RANDOM = False
+RANDOM = True
 
 ac_match_count = 0
 
@@ -190,7 +190,7 @@ def run_commentz_walter(shingles, file_names):
 ##### MAIN #####
 
 
-def run_tests(file_names, test_file_text, shingle_len, algorithm):
+def run_tests(file_names, test_file_text, shingle_len, shingles, algorithm):
 	""" Runs all tests on algorithm and prints and returns the runtime
 
 		@param file_names: list of all file_names to be checked for shingles
@@ -199,7 +199,6 @@ def run_tests(file_names, test_file_text, shingle_len, algorithm):
 		@param algorithm: Algorithm to be tested
 		@return: time elapsed to match all shingles to all files
 	"""
-	shingles = get_shingles(test_file_text, shingle_len) if not RANDOM else get_random_shingles(test_file_text, shingle_len)
 
 	if(algorithm == Algorithm.aho_corasick):
 		print("####   AHO-CORASICK   ####")
@@ -218,12 +217,12 @@ def run_tests(file_names, test_file_text, shingle_len, algorithm):
 	print("TOTAL MATCHES: {matches}".format(matches=result.matches))
 	return result.runtime
 
-def run_all_tests(file_names, test_file_text, shingle_len):
+def run_all_tests(file_names, test_file_text, shingles, shingle_len):
 	print("SHINGLE LENGTH: {len}".format(len=shingle_len))
 
-	run_tests(file_names, test_file_text, shingle_len, Algorithm.aho_corasick)
-	run_tests(file_names, test_file_text, shingle_len, Algorithm.rabin_karp)
-	run_tests(file_names, test_file_text, shingle_len, Algorithm.commentz_walter)
+	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.aho_corasick)
+	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.rabin_karp)
+	run_tests(file_names, test_file_text, shingle_len, shingles, Algorithm.commentz_walter)
 
 	print("-- -- -- -- -- -- -- -- -- -- -- ")
 
@@ -231,7 +230,7 @@ if __name__ == '__main__':
 
 	Result = namedtuple('Result', ['runtime', 'matches'])
 	corpuses = []
-	corpuses.append("all_articles")
+	corpuses.append("all_articles2.3MB")
 
 	#test of document we want to detect plagarism in
 	test_file_text = ''.join([line.rstrip('\n') for line in open(TEST_FILE)])
@@ -239,10 +238,11 @@ if __name__ == '__main__':
 	for corpus in corpuses:
 		#filenames of all other files
 		file_names = files_in_directory(CORPUS_PREFIX + corpus)
-		for i in range(10, 100, 30):
+		for i in range(5, 15):
+			shingles = get_shingles(test_file_text, i) if not RANDOM else get_random_shingles(test_file_text, i)
 			print("RANDOM: {random}".format(random=RANDOM))
 			print("CORPUS: {corpus}".format(corpus=corpus))
-			run_all_tests(file_names, test_file_text, i)
+			run_all_tests(file_names, test_file_text, shingles, i)
 
 
 
