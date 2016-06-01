@@ -284,6 +284,9 @@ class CWAuto(Trie):
 
 				char_to_find = text[i-j]
 
+			if (j > i):
+				j = i
+
 			i += self.shift_func(v, j)
 
 		return len(matches)
